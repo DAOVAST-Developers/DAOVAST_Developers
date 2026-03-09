@@ -1,4 +1,4 @@
-# SV Developers | Performance-First Web Architecture
+# DAOVAST Developers | Performance-First Web Architecture
 
 Engineered for speed. Built for growth.
 
