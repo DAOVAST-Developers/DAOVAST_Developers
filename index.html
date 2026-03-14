@@ -51,11 +51,28 @@ a{text-decoration:none}
 }
 
 /* ===== CURSOR ===== */
-#cdot,#cring{position:fixed;top:0;left:0;pointer-events:none;z-index:9999;transform:translate(-50%,-50%)}
-#cdot{width:8px;height:8px;background:var(--acc);border-radius:50%;transition:.15s}
-#cring{width:34px;height:34px;border:1.5px solid rgba(0,212,255,0.5);border-radius:50%;z-index:9998;transition:width .3s,height .3s,border-color .3s}
-.cur-big #cring{width:56px;height:56px;border-color:var(--ac2)}
-@media(pointer:coarse){#cdot,#cring{display:none}}
+#cdot{
+  position:fixed;pointer-events:none;z-index:99999;
+  width:12px;height:12px;
+  background:var(--acc);border-radius:50%;
+  box-shadow:0 0 12px var(--acc),0 0 24px rgba(0,212,255,0.5);
+  transform:translate(-50%,-50%);
+  top:-200px;left:-200px;
+  opacity:0;
+  transition:width .2s,height .2s,background .2s,box-shadow .2s,opacity .3s;
+}
+#cring{
+  position:fixed;pointer-events:none;z-index:99998;
+  width:38px;height:38px;
+  border:2px solid rgba(0,212,255,0.8);border-radius:50%;
+  transform:translate(-50%,-50%);
+  top:-200px;left:-200px;
+  opacity:0;
+  transition:width .35s,height .35s,border-color .35s,opacity .3s;
+}
+.cur-big #cdot{width:8px;height:8px;background:var(--ac2);box-shadow:0 0 10px var(--ac2)}
+.cur-big #cring{width:60px;height:60px;border-color:var(--ac2)}
+@media(pointer:coarse){#cdot,#cring{display:none!important}}
 
 /* ===== CANVAS BG ===== */
 #bgc{position:fixed;inset:0;z-index:0;pointer-events:none}
@@ -98,7 +115,7 @@ body.lm nav.solid{background:rgba(240,244,248,0.98)}
 .logo-img{
   height:40px;width:auto;
   display:block;flex-shrink:0;
-  /* Knock out white background — shows black logo as white on dark bg */
+  border-radius:10px;
   filter:invert(1) drop-shadow(0 0 7px rgba(0,212,255,0.55));
   transition:filter .3s,transform .3s;
 }
@@ -870,9 +887,24 @@ footer{position:relative;z-index:1;border-top:1px solid var(--bdr);padding:48px 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 /* CURSOR */
 const cdot=document.getElementById('cdot'),cring=document.getElementById('cring');
-let mx=0,my=0,rx=0,ry=0;
-document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cdot.style.left=mx+'px';cdot.style.top=my+'px'});
-(function loop(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;cring.style.left=rx+'px';cring.style.top=ry+'px';requestAnimationFrame(loop)})();
+let mx=window.innerWidth/2,my=window.innerHeight/2,rx=mx,ry=my;
+let cursorActive=false;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  if(!cursorActive){
+    cursorActive=true;
+    cdot.style.opacity='1';cring.style.opacity='1';
+  }
+  cdot.style.left=mx+'px';cdot.style.top=my+'px';
+});
+document.addEventListener('mouseleave',()=>{cdot.style.opacity='0';cring.style.opacity='0'});
+document.addEventListener('mouseenter',()=>{if(cursorActive){cdot.style.opacity='1';cring.style.opacity='1'}});
+(function loop(){
+  rx+=(mx-rx)*.13;ry+=(my-ry)*.13;
+  cring.style.left=Math.round(rx)+'px';
+  cring.style.top=Math.round(ry)+'px';
+  requestAnimationFrame(loop);
+})();
 document.querySelectorAll('a,button,.pcta').forEach(el=>{el.addEventListener('mouseenter',()=>document.body.classList.add('cur-big'));el.addEventListener('mouseleave',()=>document.body.classList.remove('cur-big'))});
 
 /* MAGNETIC */
